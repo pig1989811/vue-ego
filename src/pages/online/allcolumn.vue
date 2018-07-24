@@ -8,7 +8,7 @@
           <span>{{item.label}}</span>
         </div>
         <ul v-if="item.sub" class="flex" style="margin-top:.2rem;">
-          <router-link :to="{name:'Products',query:{type:1,id:sub.id,update:'true'}}" v-for="(sub,subIndex) in item.sub" :key="subIndex" class="item text-center" tag="li">
+          <router-link :to="{name:'Products',query:{type:1,id:sub.id},params:{update:'true'}}" v-for="(sub,subIndex) in item.sub" :key="subIndex" class="item text-center" tag="li">
             <span>{{sub.names}}</span>
           </router-link>
         </ul>
@@ -80,4 +80,4 @@ export default {
     padding: 0.2rem 0.1rem;
   }
 }
-</style>	
+</style>  

@@ -19,7 +19,7 @@
               <span class="fs-12">责任金额</span>
             </span>
             <span v-else-if="info.isCanUserCou=='3'">{{info.productAttrStock&&info.productAttrStock.price}}
-              <span class="fs-14">代金券</span>
+              <span class="fs-14">兑换券</span>
             </span>
           </template>
           <template v-else>
@@ -42,7 +42,7 @@
               </span>
             </yd-cell-item>
             <yd-cell-item v-else-if="info.isCanUserCou=='3'">
-              <span slot="left">代金券使用说明:{{info.productAttrStock&&info.productAttrStock.price}}代金券 +
+              <span slot="left">兑换券使用说明:{{info.productAttrStock&&info.productAttrStock.price}}兑换券 +
                 <span class="danger-color">￥{{info.pointNeedMoney || 0}}</span>
               </span>
             </yd-cell-item>
@@ -94,7 +94,7 @@
             <template v-if="info.isWholesale=='0'">
               <p class="danger-color fs-14" v-if="info.isCanUserCou=='1'">{{info.productAttrStock&&info.productAttrStock.price}}积分+￥{{info.pointNeedMoney}}</p>
               <p class="danger-color fs-14" v-else-if="info.isCanUserCou=='2'">{{info.productAttrStock&&info.productAttrStock.price}}责任金</p>
-              <p class="danger-color fs-14" v-else-if="info.isCanUserCou=='3'">{{info.productAttrStock&&info.productAttrStock.price}}代金券</p>
+              <p class="danger-color fs-14" v-else-if="info.isCanUserCou=='3'">{{info.productAttrStock&&info.productAttrStock.price}}兑换券</p>
               <p class="danger-color fs-14" v-else>￥{{info.productAttrStock&&info.productAttrStock.price}}</p>
             </template>
             <template v-else>
@@ -115,21 +115,21 @@
             <h3>请选择属性：</h3>
             <div class="flex align-center" v-for="(item,index) in info.attrs" :key="index">
               <span class="attr-name fs-14" v-if="info.isCanUserCou=='2'">责任金兑换</span>
-              <span class="attr-name fs-14" v-else-if="info.isCanUserCou=='3'">代金券兑换</span>
+              <span class="attr-name fs-14" v-else-if="info.isCanUserCou=='3'">兑换券兑换</span>
               <span class="attr-name fs-14" v-else>{{item.attrName}}</span>
               <ul class="attr-list flex-1">
                 <li class="attr-item" :class="{'active':attr.selected}" v-for="(attr,attrIndex) in item.attrValues" :key="attr.id" :data-id="attr.id" @click="chooseAttr(item,attr,attrIndex)">{{attr.attrValueId.attrValue}}</li>
               </ul>
             </div>
           </div>
-          <yd-cell-group v-else-if="info.isWholesale=='1' && +member.merchantType <2">
+          <!-- <yd-cell-group v-else-if="info.isWholesale=='1' && +member.merchantType <2">
             <yd-cell-item arrow type="link" href="/merchant/upgrade">
               <p slot="left">VIP商家版立省
                 <span class="danger-color fs-14">￥{{info.productAttrStock.honourPreferentialMoney}}</span>
               </p>
               <span slot="right" class="fs-14">去升级</span>
             </yd-cell-item>
-          </yd-cell-group>
+          </yd-cell-group> -->
           <div class="middle-2">
             <template v-if="info.isWholesale=='1'">
               <div class="flex align-center">

@@ -59,13 +59,15 @@
 
 .self-male:before { content: "\e62c"; }
 
-.self-message:before { content: "\e67d"; }
-
 .self-me1:before { content: "\e60c"; }
+
+.self-message:before { content: "\e644"; }
 
 .self-qrcode:before { content: "\e642"; }
 
 .self-upload:before { content: "\e66f"; }
+
+.self-category:before { content: "\e62e"; }
 
 .self-zengsong:before { content: "\e62b"; }
 
@@ -90,6 +92,8 @@
 .self-wifi:before { content: "\e64d"; }
 
 .self-lock:before { content: "\e60f"; }
+
+.self-fire:before { content: "\e73d"; }
 
 .self-cart2:before { content: "\e622"; }
 

@@ -63,15 +63,15 @@
           </p>
         </yd-cell-item>
       </yd-cell-group>
-      <group title="选择赠送方式">
+      <!-- <group title="选择赠送方式">
         <div class="box">
           <checker v-model="commissionType" class="flex" default-item-class="self-checker-item" selected-item-class="self-checker-selected" type="radio" :radio-required="true">
             <checker-item value="1" class="flex-1">
-              代金券(确认收货后到账)
+              兑换券(确认收货后到账)
             </checker-item>
           </checker>
         </div>
-      </group>
+      </group> -->
       <yd-cell-group title="选择支付方式">
         <yd-cell-item type="radio">
           <span slot="icon" class="iconfont-large self-zhifubao" style="color:#00a0ea"></span>

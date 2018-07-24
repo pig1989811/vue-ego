@@ -1,23 +1,25 @@
 <template>
   <div>
     <header class="head-top flex align-center">
-      <!-- <div class="left-icon text-center" @click="login">
-        <span class="iconfont-large self-me1"></span>
-      </div> -->
-      <div class="search-container2 flex-1" @click="goProducts('1398')">
-        <span class="iconfont self-search"></span>
-        <input type="text" disabled placeholder="搜索自营商品...">
+      <div class="left-icon">
+        <img :src="getLocalImg('user.png')">
       </div>
-      <!-- <div class="right-icon text-center" @click="scan">
-        <span class="iconfont-large self-scan"></span>
-      </div> -->
+      <div class="search-container2 flex-1" @click="navigate('Products',{id:1398,type:1})">
+        <span class="iconfont self-search"></span>
+        <input type="text" disabled placeholder="搜索自营商品">
+      </div>
       <div class="right-icon text-center">
         <router-link to="/news/index?update=true">
           <span class="iconfont-large self-message"></span>
         </router-link>
       </div>
     </header>
-    <main class='scroll-content'>
+    <ul class="nav-list" ref="swipeList">
+      <li v-for="(item,index) in column" :key="index" @click="navigate2('Products',{id:item.id,type:1},index)" class="nav-item" :class="{'nav-active':curIndex == index}">
+        <span>{{item.names}}</span>
+      </li>
+    </ul>
+    <main class='scroll-content-1' style="top: 1.7rem;">
       <yd-pullrefresh ref="homepage" :callback="refresh" :show-init-tip="false">
         <section>
           <yd-slider :loop="false" :autoplay="2000">
@@ -26,19 +28,40 @@
                 <img :src="item.photo" :alt="item.names">
               </router-link>
             </yd-slider-item>
-            <yd-slider-item @click.native="goMerchant">
+            <!-- <yd-slider-item @click.native="goMerchant">
               <img :src="getLocalImg('tt_2.jpg')" alt="采购专区">
-            </yd-slider-item>
+            </yd-slider-item> -->
           </yd-slider>
         </section>
-        <!-- 四大平台 -->
-        <section class="platform-container flex just-around">
-          <div class="discount-tag">优惠购</div>
-          <div v-for="(item,index) in platform" :key="index" class="platform-item flex-1" @click="navigate(item.link)">
-            <img :src="getLocalImg(item.img)">
-            <p>{{item.text}}</p>
+        <!-- 平台跳转 -->
+        <section class="platform-container">
+          <div class="login-btn" @click="login" v-if="!member">登录/注册</div>
+          <div class=" flex just-around">
+            <!-- <div v-for="(item,index) in platform" :key="index" class="platform-item flex-1" @click="navigate(item.link,{id:item.id,type:item.type})">
+            </div> -->
+            <div class="platform-item flex-1" @click="navigate('Products',{id:1398,type:1})">
+              <img :src="getLocalImg('navigation_01.jpg')">
+                <p>自营商城</p>
+            </div>
+            <div class="platform-item flex-1" @click="navigate('Products',{id:1357,type:1})">
+              <img :src="getLocalImg('navigation_02.jpg')">
+                <p>积分商城</p>
+            </div>
+            <div class="platform-item flex-1" @click="navigate('Products',{id:1415,type:1})">
+              <img :src="getLocalImg('navigation_03.jpg')">
+                <p>兑换券商城</p>
+            </div>
+            <div class="platform-item flex-1" @click="navigate('Coupon')" v-if="member&&(+member.merchantType>0)">
+              <img :src="getLocalImg('navigation_04.jpg')">
+                <p>充值中心</p>
+            </div>
+            <div class="platform-item flex-1" @click="navigate('')">
+              <img :src="getLocalImg('navigation_05.jpg')">
+                <p>睿德教育</p>
+            </div>
           </div>
         </section>
+        <!-- 资讯 -->
         <div class="flex align-center news-box" v-show="info.newList&&info.newList.result.length">
           <!-- <div class="flex align-center news-box"> -->
           <div class="rolltip">
@@ -52,208 +75,42 @@
               </router-link>
             </yd-rollnotice-item>
           </yd-rollnotice>
-          <router-link :to="{name:'News',query:{update:'true'}}">更多></router-link>
+          <router-link :to="{name:'News',query:{update:'true'}}" style="color:#fe6637;">更多</router-link>
         </div>
+        <!-- 广告栏 -->
         <section class="high-container">
-          <img :src="getLocalImg('20180529_1.png')" alt="直降到底 嗨翻618">
+          <img :src="getLocalImg('20180529_1.png')">
         </section>
-        <section class="hot-container">
-          <div class="hot-box">
-            <div class="hot-header">
-              <img :src="getLocalImg('20180529_4.png')" alt="">
-              <span>今日必抢</span>
-            </div>
-            <ul class="type-list clearfix">
-              <li class="type-item pd-item fl">
-                <div class="img-cover">
-                  <img src="http://admin.ttyg168.cn/public/upload/goods/2018/04-04/1d1f309ca9fab0d3e6119d9cc22860ad.jpg">
-                </div>
-                <div class="type-title jianbian-bg1">必备厨具</div>
-              </li>
-              <li class="type-item pd-item fl">
-                <div class="img-cover">
-                  <img src="http://admin.ttyg168.cn/public/upload/goods/2018/04-04/1d1f309ca9fab0d3e6119d9cc22860ad.jpg">
-                </div>
-                <div class="type-title jianbian-bg1">家用电器</div>
-              </li>
-              <li class="type-item pd-item fl">
-                <div class="img-cover">
-                  <img src="http://admin.ttyg168.cn/public/upload/goods/2018/04-04/1d1f309ca9fab0d3e6119d9cc22860ad.jpg">
-                </div>
-                <div class="type-title jianbian-bg1">酒水副食</div>
-              </li>
-            </ul>
-          </div>
-          <template v-for="(item,index) in info.indexProducts.slice(0,2)">
-            <div :key="index" class="hot-box">
-              <!-- <div :style="{'background-image':formatBg('20180529_4.png')}" class="hot-header">
-                <span>{{item.columnName}}</span>
-              </div> -->
-              <div class="hot-header">
-                <img :src="getLocalImg('20180529_4.png')" alt="">
-                <span>{{item.columnName}}</span>
-              </div>
-              <ul class="pd-list clearfix">
-                <router-link :to="{path:'/online/product',query:{id:pd.id}}" v-for="pd in item.product" :key="pd.id" tag="li" class="pd-item fl">
-                  <div class="img-cover">
-                    <img :src="pd.imgUrl" :alt="pd.name">
-                  </div>
-                  <div class="title">
-                    <h3>{{pd.name}}</h3>
-                  </div>
-                  <div class="price">
-                    零售价:
-                    <span class="orange-color fs-15">￥{{pd.price}}</span>
-                  </div>
-                </router-link>
-              </ul>
-            </div>
-          </template>
-
+        <!-- 栏目跳转 -->
+        <section class="fresh-container">
+          <ul class="clearfix">
+          <li class="fresh-item fl" @click="navigate('')">
+            <img :src="getLocalImg('20180718_1.png')" alt="">
+          </li>
+          <li class="fresh-item fl" @click="navigate('')">
+            <img :src="getLocalImg('20180718_2.png')" alt="">
+          </li>
+          <li class="fresh-item fl" @click="navigate('')">
+            <img :src="getLocalImg('20180718_3.png')" alt="">
+          </li>
+          <li class="fresh-item fl" @click="navigate('')">
+            <img :src="getLocalImg('20180718_4.png')" alt="">
+          </li>
+        </ul>
         </section>
-        <!-- 抢购专区 -->
-        <!-- <section class="buy-container">
-        <div class="flex just-between align-center">
-          <div class="flex align-center">
-            <h3 class="danger-color">限时限量抢购</h3> -->
-        <!-- <p v-show="!(curTime==3||curTime==4)"><span>{{t.hours}}</span>:<span>{{t.minutes}}</span>:<span>{{t.seconds}}</span></p> -->
-        <!-- </div>
-          <p class="danger-color" @click="goProducts(info.indexProducts&&info.indexProducts[0].columnId)">更多>>></p> -->
-        <!-- <p class="danger-color"  @click="goProducts(info.indexProducts&&info.indexProducts[0].columnId)">{{nearHour[curTime]}}</p> -->
-        <!-- </div>
-        <ul class="flex just-between pd-list">
-            <li class="pd-item" v-for="(item,index) in info.indexProducts&&info.indexProducts[0].product" :key="index">
-              <router-link :to="{path:'/online/product',query:{id:item.id}}">
-                <div class="pd-img"><img :src="item.imgUrl" :alt="item.name"></div> -->
-        <!-- <p class="danger-color fs-14">￥{{item.price}}</p> -->
-        <!-- </router-link>
-            </li>
-          </ul> -->
-        <!-- <div class="disable-mask" v-show="curTime==3||curTime==4"></div> -->
-        <!-- </section> -->
-        <!-- 代金券 -->
-        <!-- <section class="vocher-container">
-        <div>
-          <div class="flex just-between align-center" @click="goVocher">
-            <p>代金券兑换入口
-            </p>
-            <span class="entry">进入>>></span>
-          </div>
-          <ul class="flex just-between pd-list">
-            <li class="pd-item" v-for="(item,index) in info.indexProducts&&info.indexProducts[1].product" :key="index">
-              <router-link :to="{path:'/online/product',query:{id:item.id}}">
-                <img :src="item.imgUrl" :alt="item.name" class="pd-img">
-              </router-link>
-              <p class="buy-now">热销</p>
-            </li>
-          </ul>
-        </div>
-      </section> -->
-        <!-- <section class="product-container" v-for="(item,index) in info.indexProducts&&info.indexProducts.slice(2)" :key="index">
-          <h3 class="type-title" @click="goProducts(item.columnId)">{{item.columnName.substr(0,2)}}
-            <span :style="{color:colors[index]}">{{item.columnName.substr(2)}}>>></span>
-          </h3>
-          <ul class="pd-list flex">
-            <router-link :to="{path:'/online/product',query:{id:pd.id}}" v-for="pd in item.product" :key="pd.id" tag="li" class="pd-item">
+        <!-- 商品展示 -->
+        <section class="pd-list clearfix">
+            <router-link :class="['pd-item fl',index==0?'pd-item__large':'pd-item__middle']" v-for="(item,index) in info.indexProducts&&info.indexProducts[0].product" :key="index" :to="{path:'/online/product',query:{id:item.id}}">
               <div class="img-cover">
-                <img :src="pd.imgUrl" :alt="pd.name">
+                <img :src="item.imgUrl">
               </div>
-              <div class="title flex align-center">
-                <h3>{{pd.name}}</h3>
-              </div>
-              <div class="price flex align-center">
-                零售价:
-                <span class="orange-color fs-15">￥{{pd.price}}</span>
+              <div class="pd-info">
+                <div class="pd-new" v-if="index==0">每日新品</div>
+                <div class="pd-name">{{item.name}}</div>
+              <!-- <div class="pd-attr">{{item.name}}</div> -->
+              <div class="pd-price"><span class="danger-color">￥{{item.price}}</span></div>
               </div>
             </router-link>
-          </ul>
-        </section> -->
-        <section class="activity-container clearfix">
-          <div class="activity-header" :style="{'background-image':formatBg('20180529_2.png')}">
-            <span class="jianbian-text1">爱生活</span>
-          </div>
-          <div class="activity-item fl">
-            <div class="activity-text fl">
-              <h3 class="activity-name">超值家电</h3>
-              <p>美的大功率吸尘器</p>
-              <span class="activity-desc jianbian-bg2">领券购物更优惠</span>
-            </div>
-            <div class="activity-thumb fr">
-              <img src="http://statics.76sd.com/data/files/goods/20180111/5a56b972287ad.jpg" alt="">
-            </div>
-          </div>
-          <div class="activity-item fl">
-            <div class="activity-text fl">
-              <h3 class="activity-name">精选厨具</h3>
-              <p>美的大功率吸尘器</p>
-            </div>
-            <div class="activity-thumb fr">
-              <img src="http://statics.76sd.com/data/files/goods/20180111/5a56b972287ad.jpg" alt="">
-            </div>
-          </div>
-          <div class="activity-item fl">
-            <div class="activity-text fl">
-              <h3 class="activity-name">开胃饮料</h3>
-              <p>SO有机苹果醋</p>
-            </div>
-            <div class="activity-thumb fr">
-              <img src="http://statics.76sd.com/data/files/goods/20180111/5a56b972287ad.jpg" alt="">
-            </div>
-          </div>
-          <div class="activity-item fl">
-            <div class="activity-text fl">
-              <h3 class="activity-name">男士理容</h3>
-              <p>飞科全身水洗电动剃须刀</p>
-            </div>
-            <div class="activity-thumb fr">
-              <img src="http://statics.76sd.com/data/files/goods/20180111/5a56b972287ad.jpg" alt="">
-            </div>
-          </div>
-        </section>
-        <section class="activity-container clearfix">
-          <div class="activity-header" :style="{'background-image':formatBg('20180529_2.png')}">
-            <span class="jianbian-text1">购好物</span>
-          </div>
-          <div class="activity-item fl">
-            <div class="activity-text fl">
-              <h3 class="activity-name">就爱高颜值</h3>
-              <p>美的大功率吸尘器</p>
-            </div>
-            <div class="activity-thumb fr">
-              <img src="http://statics.76sd.com/data/files/goods/20180111/5a56b972287ad.jpg" alt="">
-            </div>
-          </div>
-          <div class="activity-item fl">
-            <div class="activity-text fl">
-              <h3 class="activity-name">美容护肤</h3>
-              <p>白藜芦醇温润丰唇膏</p>
-            </div>
-            <div class="activity-thumb fr">
-              <img src="http://statics.76sd.com/data/files/goods/20180111/5a56b972287ad.jpg" alt="">
-            </div>
-          </div>
-          <div class="activity-item fl">
-            <div class="activity-text fl">
-              <h3 class="activity-name">大牌特价</h3>
-              <p>TCL多功能家用电烤箱</p>
-            </div>
-            <div class="activity-thumb fr">
-              <img src="http://statics.76sd.com/data/files/goods/20180111/5a56b972287ad.jpg" alt="">
-            </div>
-          </div>
-          <div class="activity-item fl">
-            <div class="activity-text fl">
-              <h3 class="activity-name">送礼首选</h3>
-              <p>贵州茅台天朝上品贵人酒</p>
-              <span class="activity-desc jianbian-bg2">好物低价任你抢</span>
-            </div>
-            <div class="activity-thumb fr">
-              <img src="http://statics.76sd.com/data/files/goods/20180111/5a56b972287ad.jpg" alt="">
-            </div>
-          </div>
-        </section>
-        <section class="merchant-container">
-          <img :src="getLocalImg('20180529_3.jpg')" alt="开通跨行业盈利系统">
         </section>
       </yd-pullrefresh>
       <yd-popup v-model="showTips" position="center" width="90%">
@@ -274,7 +131,8 @@ import { mixin, getStore, setStore, localImg } from "components/common/mixin";
 import {
   ygOnlineShopIndex,
   findAppUpgredeByType,
-  newNotice
+  newNotice,
+  allColumn
 } from "../../api/index";
 export default {
   name: "Online",
@@ -283,31 +141,14 @@ export default {
       oldBack: mui.back,
       info: {},
       loginAccount: false,
-      platform: [
-        { img: "20180529_6.png", link: "/online/tmindex", text: "淘宝" },
-        { img: "20180529_9.png", link: "/online/tmindex", text: "天猫" },
-        { img: "20180529_8.png", link: "/online/jdindex", text: "京东" },
-        { img: "20180529_7.png", link: "/online/ttindex", text: "天天易购" },
-        { img: "20180529_5.png", link: "/online/allcolumn", text: "所有分类" }
-      ],
+      column:[],
+      curIndex :0,
+      scrollLeft:0, //记录tab滚动值
       colors: ["#dc0719", "#da5906", "#ff3964"],
       type: "", //APP环境
       curVersion: "", //app版本
       showTips: false,
-      tipsInfo: {},
-      t: {
-        hours: "00",
-        minutes: "00",
-        seconds: "00"
-      },
-      nearHour: [
-        "9:30-10:30场",
-        "12:30-13:30场",
-        "19:30-20:30场",
-        "未开始",
-        "明天见"
-      ],
-      curTime: 0
+      tipsInfo: {}
     };
   },
   components: { HeaderTop, FooterBar },
@@ -319,6 +160,7 @@ export default {
     });
   },
   beforeRouteLeave(to, from, next) {
+    this.scrollLeft = this.$refs.swipeList.scrollLeft;
     mui.back = this.oldBack;
     next();
   },
@@ -326,6 +168,7 @@ export default {
     this.init();
     this.getInfo();
     this.getTips();
+    this.getColumn();
   },
   mounted() {
     document.addEventListener("plusready", this.getVersion, false);
@@ -345,7 +188,9 @@ export default {
         this.$route.path
       ];
     }
-    //this.judgeTime();
+    this.$nextTick(()=>{
+      this.$refs.swipeList.scrollLeft=this.scrollLeft;
+    })
   },
   methods: {
     init() {
@@ -406,69 +251,30 @@ export default {
           timeout: 1500
         });
       });
-      //this.judgeTime();
     },
-    format(t) {
-      let h = Math.floor(t / (60 * 60)),
-        m = Math.floor(t / 60) % 60,
-        s = t % 60,
-        pad = t => {
-          return t.toString().replace(/^(\d)$/, "0$1");
-        };
-      h = pad(h);
-      m = pad(m);
-      s = pad(s);
-      return { hours: h, minutes: m, seconds: s };
-    },
-    countTime(t, callback) {
-      let timer = setInterval(() => {
-        let { hours, minutes, seconds } = this.format(t--);
-        this.t = Object.assign({}, this.t, { hours, minutes, seconds });
-        if (t < 0) {
-          callback && callback();
-          clearInterval(timer);
-          timer = null;
+    getColumn() {
+      let vm = this;
+      mui.ajax({
+        url: allColumn,
+        type: "post",
+        headers: { "app-version": "v1.0" },
+        data: {
+          token: md5(`gjfengallColumn`)
+        },
+        success(res) {
+          let _result = res.result;
+          let menu = [];
+          Object.entries(_result).forEach((value, index) => {
+            var item = {};
+            var parent = value[0],
+              children = value[1];
+            if(children.length>0){
+              menu.push(...children)
+            }
+          });
+          vm.column = menu;
         }
-      }, 1000);
-    },
-    judgeTime() {
-      var ct = new Date();
-      var cy = ct.getFullYear(),
-        cm = ct.getMonth() + 1,
-        cd = ct.getDate();
-      var t_now = ct.getTime(),
-        t_930 = new Date(`${cy}-${cm}-${cd} 09:30:00`).getTime(),
-        t_1030 = new Date(`${cy}-${cm}-${cd} 10:30:00`).getTime(),
-        t_1230 = new Date(`${cy}-${cm}-${cd} 12:30:00`).getTime(),
-        t_1330 = new Date(`${cy}-${cm}-${cd} 13:30:00`).getTime(),
-        t_1930 = new Date(`${cy}-${cm}-${cd} 19:30:00`).getTime(),
-        t_2030 = new Date(`${cy}-${cm}-${cd} 20:30:00`).getTime();
-      var cb = () => {
-        this.curTime = 3;
-      };
-      // 未开始
-      if (
-        t_now < t_930 ||
-        (t_now > t_1030 && t_now < t_1230) ||
-        (t_now > t_1330 && t_now < t_1930)
-      ) {
-        this.curTime = 3;
-      } else if (t_now >= t_930 && t_now <= t_1030) {
-        // 9:30-10:30
-        this.curTime = 0;
-        this.countTime(Math.floor((t_1030 - t_now) / 1000), cb);
-      } else if (t_now >= t_1230 && t_now <= t_1330) {
-        // 12:30-13:30
-        this.curTime = 1;
-        this.countTime(Math.floor((t_1330 - t_now) / 1000), cb);
-      } else if (t_now >= t_1930 && t_now <= t_2030) {
-        // 19:30-20:30
-        this.curTime = 2;
-        this.countTime(Math.floor((t_2030 - t_now) / 1000), cb);
-      } else {
-        // >20:30
-        this.curTime = 4;
-      }
+      });
     },
     goMerchant() {
       if (!this.member) {
@@ -493,30 +299,36 @@ export default {
       }
       this.$router.push({ name: "Me" });
     },
-    scan() {
-      this.$router.push({ name: "Scan" });
-    },
-    navigate(link) {
-      if (!link) {
-        this.$dialog.toast({
-          mes: "数据对接中，敬请期待！"
+    navigate(link, p) {
+      //商品列表
+      if (p && p.id) {
+        this.$router.push({
+          name: "Products",
+          params: { update: true },
+          query: p
         });
-        return;
+      } else {
+        //其他平台
+        if (!link) {
+          this.$dialog.toast({
+            mes: "该模块未开发，敬请期待！"
+          });
+          return;
+        }
+        this.$router.push({ name: link });
       }
-      this.$router.push({ path: link });
+    },
+    navigate2(link,p,i){
+      this.curIndex = i;
+      setTimeout(()=>{
+        this.navigate(link,p);
+      },500)
     },
     goVocher() {
       this.$router.push({
         name: "Products",
         params: { update: true },
         query: { type: 1, id: this.info.indexProducts[1].columnId }
-      });
-    },
-    goProducts(id) {
-      this.$router.push({
-        name: "Products",
-        params: { update: true },
-        query: { type: 1, id }
       });
     },
     getVersion() {
@@ -602,15 +414,15 @@ export default {
   height: 1rem;
   background-color: @white;
   padding: 0.1rem 0.15rem;
-  .left-icon,
-  .right-icon {
-    .wh(1rem,1rem);
-    line-height: 1rem;
+  .left-icon img {
+    .wh(0.6rem,0.6rem);
+    border-radius: 50%;
   }
   .search-container2 {
-    background: rgb(232, 232, 232);
+    background: rgba(232, 232, 232, 0.8);
     padding: 0.15rem 0.1rem 0.15rem 0.1rem;
     border-radius: 0.4rem;
+    .mg-h;
     input {
       width: 86%;
       border: none;
@@ -618,9 +430,17 @@ export default {
       font-size: 0.3rem;
     }
   }
-  span {
+  .self-search {
+    display: inline-block;
     color: rgb(102, 102, 102);
+    width: 0.5rem;
+    border-right: 1px solid #ccc;
   }
+}
+.nav-container {
+  background: @white;
+  height: 1rem;
+  line-height: 1rem;
 }
 .yd-slider-item img {
   height: 4rem;
@@ -632,70 +452,50 @@ export default {
     width: 100%;
   }
 }
-.buy-container {
-  position: relative;
-  padding: @pd @pd 0;
+.nav-list {
+  padding: 0 2%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
   background-color: @white;
-  h3 {
-    font-size: 0.34rem;
-    margin-right: 0.1rem;
-  }
-  span {
+  .nav-item {
     display: inline-block;
-    color: @white;
-    background-color: #333;
-    width: 15px;
-    height: 15px;
-    line-height: 15px;
+    width: 20%;
+    height: .6rem;
     text-align: center;
-  }
-  .pd-item {
-    a {
-      display: block;
+    transition: all 0.2s;
+    font-size: 0.3rem;
+    span{
+    border-bottom: 2px solid transparent;
+
     }
-    width: 33.3%;
-    padding: 0.1rem;
-    margin-bottom: 0.1rem;
-    text-align: center;
-    .pd-img {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      padding: 50% 0;
-      img {
-        width: 100%;
-        .hv-cen;
+    &.nav-active {
+      span{
+        color: @red;
+      border-color: currentColor;
+      padding: 0 0 .1rem 0;
       }
+      
     }
-  }
-  .disable-mask {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 500;
   }
 }
 .platform-container {
   background-color: @white;
-  padding: 0.5rem 0 0.1rem;
-  position: relative;
+  padding: 0 0 0.1rem;
   overflow: hidden;
-  .discount-tag {
-    position: absolute;
-    left: -0.15rem;
-    top: 0;
-    border-radius: 10px;
-    background-color: rgb(228, 1, 12);
-    color: @white;
-    font-size: 0.24rem;
-    padding: 2px 0.1rem;
-    width: 1rem;
-    text-align: right;
+  .login-btn {
+    margin: 0 auto;
+    background: #fe6637;
+    color: #fff;
+    font-size: 0.32rem;
+    width: 3rem;
+    text-align: center;
+    height: 0.8rem;
+    line-height: 0.8rem;
+    border-radius: 0 0 5px 5px;
   }
   .platform-item {
-    margin-bottom: @pd;
+    .mg-v;
     text-align: center;
     img {
       .wh(1rem,1rem);
@@ -708,7 +508,14 @@ export default {
 }
 .news-box {
   padding: 0 0.1rem;
+  margin: 0.1rem 0;
   background-color: @white;
+  .rolltip {
+    width: 2rem;
+    img {
+      width: 100%;
+    }
+  }
   .news-tag {
     display: inline-block;
     margin: 0 0.1rem;
@@ -722,150 +529,103 @@ export default {
     .ellipsis;
   }
 }
-.vocher-container {
+.fresh-container {
   background-color: @white;
-  padding: 0.1rem;
-  > div {
-    background-color: rgb(255, 224, 229);
-    border-radius: 5px;
-    .pd;
-    color: rgb(223, 37, 48);
-    p {
-      font-size: 0.4rem;
-    }
-    span {
-      font-size: 0.28rem;
-    }
-  }
-  .pd-list {
-    margin-top: @pd;
-    .pd-item {
-      position: relative;
-      width: 31%;
-      border-radius: @pd;
-      text-align: center;
-      overflow: hidden;
-      a {
-        display: block;
-      }
-      .pd-img {
-        box-shadow: 0 0 5px rgba(223, 37, 48, 0.6);
-        border-radius: @pd;
-        .wh(100%,2rem);
-      }
-      .buy-now {
-        position: absolute;
-        left: -0.5rem;
-        top: 0.1rem;
-        .wh(1.5rem,0.3rem);
-        line-height: 0.3rem;
-        background-color: @red;
-        color: @white;
-        font-size: 0.2rem;
-        transform: rotate(-45deg);
-      }
-    }
-  }
-}
-.product-container {
-  background-color: @white;
-  .pd-list {
-    background-color: rgb(243, 243, 243);
-  }
-  .type-title {
-    .pd;
-    background-color: rgb(243, 243, 243);
-  }
-  .pd-item {
-    width: 32%;
-    margin: 2px;
-    background-color: rgb(243, 243, 243);
-    .img-cover {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      padding: 50% 0;
-      background-color: @white;
-      border: 1px solid @white;
-      img {
-        width: 100%;
-        .hv-cen;
-      }
-    }
-    .title {
-      height: 40px;
-      line-height: 20px;
-      h3 {
-        .multi-ellipsis(2);
-        padding: 0 2px;
-        font-size: 0.26rem;
-        font-weight: normal;
-        word-wrap: break-word;
-        word-break: break-all;
-        color: #333;
-      }
-    }
-    .price {
-      margin-top: 0.1rem;
-      font-size: 0.2rem;
-      .just-cont(flex-end);
-    }
-  }
-}
-.activity-container {
-  background-color: rgb(242, 242, 242);
-  .activity-header {
-    .pd-v;
+  margin: 0.1rem 0;
+  h2 {
+    margin: 10px 0;
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 400;
     letter-spacing: 5px;
-    text-align: center;
-    background-size: 100%;
-    background-repeat: no-repeat;
   }
-  .activity-item {
-    width: 50%;
-    min-height: 2rem;
-    padding: 10px 0;
-    border-right: 1px solid #eee;
-    border-bottom: 1px solid #eee;
+  .fresh-item {
+    width: 47%;
+    margin-left: 2%;
+    margin-top: 2%;
+    img {
+      width: 100%;
+      border-radius: 5px;
+    }
+  }
+}
+.pd-list {
+  .pd-item {
     background-color: @white;
-    box-shadow: 0 0 1px rgba(120, 120, 120, 0.3);
-    &:nth-of-type(2n+1) {
-      border-right: none;
-    }
-    .activity-text {
-      width: 60%;
-      padding-left: 8px;
-      
-      p {
-        font-size: 10px;
-        color: rgb(153, 153, 153);
-        margin:5px 0;
-      }
-      .activity-desc {
-        color: #fff;
-        font-size: 8px;
-        padding: 3px 5px;
-        border-radius: 3px;
-      }
-    }
-    .activity-thumb {
+    margin-bottom: 0.1rem;
+  }
+  .pd-item__large {
+    width: 100%;
+    .pd;
+    .img-cover {
+      float: left;
       width: 40%;
       img {
         width: 100%;
-        padding-right: 8px;
       }
     }
-    .activity-name {
-      font-size: 16px;
+    .pd-info {
+      float: left;
+      width: 58%;
+      margin-left: 2%;
+      .pd-new {
+        color: #fc8684;
+        font-size: 0.34rem;
+        font-weight: bold;
+      }
+      .pd-name {
+        font-size: 0.36rem;
+        .multi-ellipsis(2);
+      }
+      .pd-attr {
+        color: @lightgray;
+        font-size: 0.26rem;
+        .multi-ellipsis(2);
+      }
+      .pd-price {
+        font-size: 0.46rem;
+      }
     }
   }
-}
-.merchant-container {
-  .pd;
-  img {
-    width: 100%;
+  .pd-item__middle {
+    width: 49%;
+    padding: 0.1rem;
+    .img-cover {
+      width: 100%;
+      position: relative;
+      padding: 50% 0;
+      img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .pd-info {
+      margin-top: 0.1rem;
+      .pd-name {
+        height: 40px;
+        line-height: 20px;
+        font-size: 0.28rem;
+        .multi-ellipsis(2);
+      }
+      .pd-attr {
+        color: @lightgray;
+        font-size: 0.24rem;
+        height: 40px;
+        line-height: 20px;
+        .multi-ellipsis(2);
+      }
+      .pd-price {
+        font-size: 0.42rem;
+      }
+    }
+    &:nth-of-type(2n) {
+      margin-right: 1%;
+    }
+    &:nth-of-type(2n + 1) {
+      margin-left: 1%;
+    }
   }
 }
 .tips-content {
@@ -877,91 +637,6 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-  }
-}
-.jianbian-bg1 {
-  background: -webkit-linear-gradient(left, rgb(252, 10, 34), rgb(242, 134, 0));
-}
-.jianbian-bg2 {
-  background: -webkit-linear-gradient(
-    left,
-    rgb(248, 44, 131),
-    rgb(250, 92, 65)
-  );
-}
-.jianbian-text1 {
-  display: inline-block;
-  background: -webkit-linear-gradient(left, rgb(73, 38, 180), rgb(7, 158, 227));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.hot-container {
-  padding-bottom: @pd;
-  background-color: rgb(254, 30, 54);
-  .hot-box {
-    .hot-header {
-      position: relative;
-      color: @white;
-      font-weight: bold;
-      text-align: center;
-      img {
-        .wh(4rem,0.8rem);
-      }
-
-      span {
-        .hv-cen;
-        font-size: 0.32rem;
-        z-index: 5;
-      }
-    }
-  }
-  .pd-item {
-    width: 30.6%;
-    margin-left: 2%;
-    padding: 0.1rem;
-    background-color: @white;
-    .img-cover {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      padding: 50% 0;
-      background-color: @white;
-      border-radius: 2px;
-      img {
-        width: 100%;
-        .hv-cen;
-        border-radius: 2px;
-      }
-    }
-    .title {
-      height: 40px;
-      line-height: 20px;
-      h3 {
-        .multi-ellipsis(2);
-        padding: 0 2px;
-        font-size: 0.26rem;
-        font-weight: normal;
-        word-wrap: break-word;
-        word-break: break-all;
-        color: #333;
-      }
-    }
-    .price {
-      margin-top: 0.1rem;
-      font-size: 0.2rem;
-      text-align: right;
-    }
-  }
-  .type-item {
-    .type-title {
-      color: @white;
-      font-size: 0.28rem;
-      font-weight: 700;
-      text-align: center;
-      border-radius: 0.4rem;
-      margin: 0.2rem;
-      padding: 3px 0;
-    }
   }
 }
 </style>

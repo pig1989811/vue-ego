@@ -42,7 +42,7 @@
               <p v-if="settleList.isWholesale=='0' || settleList.isWohsalse=='0'">{{item.goodsAttr}}</p>
               <div class="flex just-between">
                 <span class="danger-color fs-16" v-if="settleList.isCanUseCou==1">{{item.goodsAmount}}积分</span>
-                <span class="danger-color fs-16" v-else-if="settleList.isCanUseCou==3">{{item.goodsAmount}}代金券</span>
+                <span class="danger-color fs-16" v-else-if="settleList.isCanUseCou==3">{{item.goodsAmount}}兑换券</span>
                 <template v-else>
                   <template v-if="settleList.isWholesale=='0' || settleList.isWohsalse=='0'">
                     <span class="danger-color fs-16">￥{{item.goodsAmount}}</span>
@@ -71,10 +71,10 @@
         <yd-cell-item>
           <span slot="left">支付明细</span>
           <span slot="right" class="fs-14" v-if="settleList.isCanUseCou==1">{{settleList.totalAmount}}积分+￥{{formatPrice(settleList.pointNiceAmount)}}</span>
-          <span slot="right" class="fs-14" v-else-if="settleList.isCanUseCou==3">{{settleList.totalAmount}}代金券+￥{{formatPrice(settleList.pos)}}</span>
+          <span slot="right" class="fs-14" v-else-if="settleList.isCanUseCou==3">{{settleList.totalAmount}}兑换券+￥{{formatPrice(settleList.pos)}}</span>
           <template slot="right" v-else>
-            <span class="danger-color fs-16 1" v-if="(settleList.isWholesale=='1' || settleList.isWohsalse=='1')&&settleList.logist=='0'">￥{{formatPrice(total2)}}</span>
-            <span class="danger-color fs-16 2" v-else-if="(settleList.isWholesale=='1' || settleList.isWohsalse=='1')&&settleList.logist=='1'">￥{{formatPrice(total2)}}</span>
+            <span class="danger-color fs-16 1" v-if="(settleList.isWholesale=='1' || settleList.isWohsalse=='1')&&settleList.logist=='0'">￥{{formatPrice(settleList.basisTotalMoney+settleList.pos)}}</span>
+            <span class="danger-color fs-16 2" v-else-if="(settleList.isWholesale=='1' || settleList.isWohsalse=='1')&&settleList.logist=='1'">￥{{formatPrice(settleList.basisTotalMoney)}}</span>
             <span class="danger-color fs-16 3" v-else>￥{{settleList.totalAmount}}</span>
           </template>
         </yd-cell-item>
@@ -90,10 +90,10 @@
           </span>
         </yd-cell-item>
         <yd-cell-item v-if="orderType=='3'">
-          <span slot="left">当前代金券:{{member.memberVoucherMoney}}</span>
+          <span slot="left">当前兑换券:{{member.memberVoucherMoney}}</span>
           <span slot="right">
             <span class="iconfont self-dui fs-12 primary-color" v-if="member.memberVoucherMoney>settleList.totalAmount">支付:{{settleList.totalAmount}}</span>
-            <span class="iconfont self-x fs-12 danger-color" v-else>代金券不足</span>
+            <span class="iconfont self-x fs-12 danger-color" v-else>兑换券不足</span>
           </span>
         </yd-cell-item>
         <yd-cell-item>
@@ -104,26 +104,26 @@
             <span class="danger-color" v-else-if="orderType=='2'">￥{{formatPrice(settleList.pos)}}</span>
             <span class="danger-color" v-else-if="orderType=='3'">￥{{formatPrice(settleList.pos)}}</span>
             <template v-else>
-              <span class="danger-color fs-16" v-if="(settleList.isWholesale=='1' || settleList.isWohsalse=='1')&&settleList.logist=='0'">￥{{formatPrice(total2 + settleList.pos)}}</span>
-              <span class="danger-color fs-16" v-else-if="(settleList.isWholesale=='1' || settleList.isWohsalse=='1')&&settleList.logist=='1'">￥{{formatPrice(total2)}}</span>
+              <span class="danger-color fs-16" v-if="(settleList.isWholesale=='1' || settleList.isWohsalse=='1')&&settleList.logist=='0'">￥{{formatPrice(settleList.basisTotalMoney+settleList.pos)}}</span>
+              <span class="danger-color fs-16" v-else-if="(settleList.isWholesale=='1' || settleList.isWohsalse=='1')&&settleList.logist=='1'">￥{{formatPrice(settleList.basisTotalMoney+settleList.pos)}}</span>
               <span class="danger-color" v-else>￥{{formatPrice(settleList.totalAmount+settleList.pos)}}</span>
             </template>
           </p>
         </yd-cell-item>
       </yd-cell-group>
-      <group title="选择赠送方式" v-if="$route.query.tips!='0'">
+      <!-- <group title="选择赠送方式" v-if="$route.query.tips!='0'">
         <div class="box">
           <checker v-model="commissionType" class="flex" default-item-class="self-checker-item" selected-item-class="self-checker-selected" type="radio" :radio-required="true">
             <checker-item value="1" class="flex-1">
-              代金券(确认收货后到账)
+              兑换券(确认收货后到账)
             </checker-item>
           </checker>
         </div>
-      </group>
+      </group> -->
       <yd-cell-group v-if="orderType=='3'">
         <yd-cell-item type="radio">
           <span slot="icon" class="iconfont-large self-daijinquan" style="color:#e7d489"></span>
-          <span slot="left">代金券</span>
+          <span slot="left">兑换券</span>
           <input slot="right" type="radio" value="10" v-model="payType" />
         </yd-cell-item>
       </yd-cell-group>
@@ -150,7 +150,7 @@ export default {
   data() {
     return {
       oldBack: mui.back,
-      orderType: "0", //0:普通商品 1：积分兑换 2责任消费 3代金券
+      orderType: "0", //0:普通商品 1：积分兑换 2责任消费 3兑换券
       remark: "", //备注
       payType: "", //支付方式
       commissionType: "1", //赠送方式
@@ -314,7 +314,7 @@ export default {
               //积分
               vm.payPos(_result.alyString, res.msg);
             }else if (vm.orderType == 3) {
-              //代金券
+              //兑换券
               vm.payPos(_result.alyString, res.msg);
             }
           } else {

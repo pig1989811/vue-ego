@@ -140,7 +140,7 @@ export default {
           return "天天宝余额";
           break;
         case "10":
-          return "代金券";
+          return "兑换券";
           break;
       }
     },

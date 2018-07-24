@@ -27,7 +27,7 @@
               <span>{{pd.price}}责任金额</span>
             </div>
             <div class="price" v-else-if="pd.isCanUserCou=='3'">
-              <span>{{pd.price}}代金券</span>
+              <span>{{pd.price}}兑换券</span>
             </div>
             <div class="price" v-else>
               <span>￥{{formatPrice(pd.price)}}</span>

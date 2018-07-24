@@ -1,5 +1,4 @@
-let baseUrl = "http://yg.gjfeng.com/gjfeng-web-client"; //易购域名
-// let baseUrl = "http://test.gzfzsw.top/gjfeng-web-client"; //测试域名
+let baseUrl = "http://www.ttyg168.cn/gjfeng-web-client"; //易购域名
 const VERSION = 'v1_0';
 let index = `${baseUrl}/app/index/${VERSION}`,
   pd = `${baseUrl}/app/product/${VERSION}`,

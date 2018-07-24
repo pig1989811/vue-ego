@@ -12,7 +12,7 @@ export default new Vuex.Store({
 		cartNum:(state)=>{
 			let count = 0;
 			state.cartList.forEach(item=>{
-				count += item.goodsNum;
+				count += item.cartInfo.goodsNum;
 			})
 			return count;
 		}

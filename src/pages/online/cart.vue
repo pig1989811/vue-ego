@@ -8,45 +8,45 @@
           <label class="cart-check flex align-center just-center" @click="countChange($event,item,index)" :class="{'checked':item.checked}">
           </label>
           <div class="flex-1">
-            <router-link :to="{name:'Product',query:{id:item.goodsId.id}}">
+            <router-link :to="{name:'Product',query:{id:item.cartInfo.goodsId.id}}">
               <yd-flexbox style="margin-bottom:5px;">
-                <img :src="item.goodsId.imgUrl" alt="">
+                <img :src="item.cartInfo.goodsId.imgUrl" alt="">
                 <yd-flexbox-item style="margin-left:5px;">
-                  <h3>{{item.goodsId.name}}</h3>
+                  <h3>{{item.cartInfo.goodsId.name}}</h3>
                   <p class="attrs">{{item.goodsAttr}}</p>
                   <div class="flex just-between align-center">
-                    <template v-if="item.goodsId.isWholesale=='1'">
+                    <template v-if="item.cartInfo.goodsId.isWholesale=='1'">
 
                       <p class="fs-16 danger-color" v-if="+member.merchantType==1">
-                        ￥{{item.goodsId.standardPrice}}
+                        ￥{{item.cartInfo.goodsId.standardPrice}}
                       </p>
                       <p class="fs-16 danger-color" v-else-if="+member.merchantType>1">
-                        ￥{{item.goodsId.honourPrice}}
+                        ￥{{item.cartInfo.goodsId.honourPrice}}
                       </p>
                     </template>
                     <template v-else>
-                      <p v-if="item.goodsId.isCanUserCou=='0'" class="fs-16 danger-color">
-                        ￥{{item.goodsId.price}}
+                      <p v-if="item.cartInfo.goodsId.isCanUserCou=='0'" class="fs-16 danger-color">
+                        ￥{{item.cartInfo.goodsId.price}}
                       </p>
-                      <p v-if="item.goodsId.isCanUserCou=='1'" class="fs-16 danger-color">
+                      <p v-if="item.cartInfo.goodsId.isCanUserCou=='1'" class="fs-16 danger-color">
                         <yd-badge type="primary" style="vertical-align: text-bottom;">
-                          <span>{{item.goodsId.price}}</span>积分</yd-badge>
-                        <span v-if="item.goodsId.pointNicePrice">+￥{{item.goodsId.pointNicePrice}}</span>
+                          <span>{{item.cartInfo.goodsId.price}}</span>积分</yd-badge>
+                        <span v-if="item.cartInfo.goodsId.pointNicePrice">+￥{{item.cartInfo.goodsId.pointNicePrice}}</span>
                       </p>
-                      <p v-if="item.goodsId.isCanUserCou=='2'" class="fs-16 danger-color">
+                      <p v-if="item.cartInfo.goodsId.isCanUserCou=='2'" class="fs-16 danger-color">
                         <yd-badge type="warning" style="vertical-align: text-bottom;">
-                          <span>{{item.goodsId.price}}</span>责任金</yd-badge>
-                        <span v-if="item.goodsId.pointNicePric">+￥{{item.goodsId.pointNicePrice}}</span>
+                          <span>{{item.cartInfo.goodsId.price}}</span>责任金</yd-badge>
+                        <span v-if="item.cartInfo.goodsId.pointNicePric">+￥{{item.cartInfo.goodsId.pointNicePrice}}</span>
                       </p>
-                      <p v-if="item.goodsId.isCanUserCou=='3'" class="fs-16 danger-color">
+                      <p v-if="item.cartInfo.goodsId.isCanUserCou=='3'" class="fs-16 danger-color">
                         <yd-badge type="danger" style="vertical-align: text-bottom;">
-                          <span>{{item.goodsId.price}}</span>代金券</yd-badge>
-                        <span v-if="item.goodsId.pointNicePrice">+￥{{item.goodsId.pointNicePrice}}</span>
+                          <span>{{item.cartInfo.goodsId.price}}</span>兑换券</yd-badge>
+                        <span v-if="item.cartInfo.goodsId.pointNicePrice">+￥{{item.cartInfo.goodsId.pointNicePrice}}</span>
                       </p>
                     </template>
-                    <yd-spinner v-model="item.goodsNum" :min="1" :max="(Math.floor(item.goodsId.repertory/(+item.goodsId.multipleNumber||1)))*(item.goodsId.multipleNumber||1)" v-show="!item.close" :unit="+item.goodsId.multipleNumber||1"></yd-spinner>
+                    <yd-spinner v-model="item.cartInfo.goodsNum" :min="1" :max="(Math.floor(item.cartInfo.goodsId.repertory/(+item.cartInfo.goodsId.multipleNumber||1)))*(item.cartInfo.goodsId.multipleNumber||1)" v-show="!item.close" :unit="+item.cartInfo.goodsId.multipleNumber||1"></yd-spinner>
                     <div v-show="item.close" class="fs-14">
-                      ×{{item.goodsNum}}
+                      ×{{item.cartInfo.goodsNum}}
                     </div>
                   </div>
                 </yd-flexbox-item>
@@ -112,7 +112,7 @@ export default {
     amount() {
       let num = 0;
       this.checkList.forEach(item => {
-        num += item.goodsNum;
+        num += item.cartInfo.goodsNum;
       });
       return num;
     }
@@ -146,8 +146,8 @@ export default {
         type: "post",
         headers: { "app-version": "v1.0" },
         data: {
-          id: item.id,
-          goodsNum: item.goodsNum,
+          id: item.cartInfo.id,
+          goodsNum: item.cartInfo.goodsNum,
           account: this.account,
           token: md5(`gjfengupdateCartNum`)
         },
@@ -170,11 +170,11 @@ export default {
         opts: () => {
           let vm = this;
           mui.ajax({
-            url: delCart + `/${item.id}`,
+            url: delCart + `/${item.cartInfo.id}`,
             type: "post",
             headers: { "app-version": "v1.0" },
             data: {
-              id: item.id,
+              id: item.cartInfo.id,
               account: this.account,
               token: md5(`gjfengdelCart`)
             },
@@ -199,21 +199,21 @@ export default {
       } else {
         let a = 0;
         this.checkList.forEach((item, index) => {
-          if (item.goodsId.isCanUserCou == "1") {
+          if (item.cartInfo.goodsId.isCanUserCou == "1") {
             a +=
-              (item.goodsId.price + item.goodsId.pointNicePrice) *
-              item.goodsNum;
-          } else if (item.goodsId.isCanUserCou == "0") {
-            if (item.goodsId.isWholesale == "1") {
+              (item.cartInfo.goodsId.price + item.cartInfo.goodsId.pointNicePrice) *
+              item.cartInfo.goodsNum;
+          } else if (item.cartInfo.goodsId.isCanUserCou == "0") {
+            if (item.cartInfo.goodsId.isWholesale == "1") {
               a +=
                 +this.member.merchantType > 1
-                  ? item.goodsId.honourPrice * item.goodsNum
-                  : item.goodsId.standardPrice * item.goodsNum;
+                  ? item.cartInfo.goodsId.honourPrice * item.cartInfo.goodsNum
+                  : item.cartInfo.goodsId.standardPrice * item.cartInfo.goodsNum;
             } else {
-              a += item.goodsId.price * item.goodsNum;
+              a += item.cartInfo.goodsId.price * item.cartInfo.goodsNum;
             }
           } else {
-            a += item.goodsId.price * item.goodsNum;
+            a += item.cartInfo.goodsId.price * item.cartInfo.goodsNum;
           }
         });
         this.totalPrice = a;
@@ -222,21 +222,21 @@ export default {
     settleCart() {
       let vm = this;
       let settleList = [],
-        orderType = "0"; //0普通商品 1积分换购 2责任消费 3代金券
+        orderType = "0"; //0普通商品 1积分换购 2责任消费 3兑换券
       var length = this.checkList.length,
         count0 = 0,
         count1 = 0,
         count2 = 0,
         count3 = 0;
       this.checkList.forEach(item => {
-        settleList.push(item.id);
-        if (item.goodsId.isCanUserCou == "0") {
+        settleList.push(item.cartInfo.id);
+        if (item.cartInfo.goodsId.isCanUserCou == "0") {
           count0++;
-        } else if (item.goodsId.isCanUserCou == "1") {
+        } else if (item.cartInfo.goodsId.isCanUserCou == "1") {
           count1++;
-        } else if (item.goodsId.isCanUserCou == "2") {
+        } else if (item.cartInfo.goodsId.isCanUserCou == "2") {
           count2++;
-        } else if (item.goodsId.isCanUserCou == "3") {
+        } else if (item.cartInfo.goodsId.isCanUserCou == "3") {
           count3++;
         }
       });

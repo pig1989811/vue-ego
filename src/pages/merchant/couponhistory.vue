@@ -1,8 +1,69 @@
 <template>
   <div>
-    <header-top title="赠送代金券记录"></header-top>
-    <main class='scroll-content-2'>
-<section v-if="info.length">
+    <header-top title="赠送兑换券记录"></header-top>
+    <tab :line-width="2" active-color='#ff5350' v-model="tabIndex" custom-bar-width="70px">
+      <tab-item  v-for="(item, index) in menu" :key="index" @on-item-click="toggleItem(index)">{{item.value}}</tab-item>
+    </tab>
+    <main class='scroll-content-1'>
+      <div v-show="tabIndex==0">
+          <ul slot="list">
+            <template v-if="info0.length>0">
+              <li class="item" v-for="(item,index) in info0" :key="index">
+            <div class="item-top flex just-between align-center">
+              <p>
+                <span class="iconfont-large self-weixinzhifu" style="color:#25d025;" v-if="item.payType=='0'"></span>
+                <span class="iconfont-large self-zhifubao" style="color:#00a0ea;" v-if="item.payType=='1'"></span>
+                <span class="iconfont-large self-edu" style="color:#f9a340;" v-if="item.payType=='4'"></span>
+                <span class="iconfont-large self-yuanbao danger-color" v-if="item.payType=='6'"></span>
+                <span class="time">{{formatTime(item.addTime, true)}}</span>
+              </p>
+              <span class="status status-0" v-if="item.tradeStatus==0">待支付</span>
+              <span class="status status-1" v-if="item.tradeStatus==1">已支付</span>
+            </div>
+            <div class="item-bottom flex just-between align-center">
+              <span class="money">{{item.realTreadeMoney}}
+                <span class="fs-14">元</span>
+              </span>
+              <p class="fs-14">{{item.memberMobile}}</p>
+            </div>
+          </li>
+            </template>
+            <section class="hv-cen text-center" v-else>
+        <span class="iconfont self-noorder" style="font-size:40px;"></span>
+        <p>没有数据</p>
+      </section>
+          </ul>
+      </div>
+      <div v-show="tabIndex==1">
+          <ul slot="list">
+            <template v-if="info1.length>0">
+              <li class="item" v-for="(item,index) in info1" :key="index">
+            <div class="item-top flex just-between align-center">
+              <p>
+                <span class="iconfont-large self-weixinzhifu" style="color:#25d025;" v-if="item.payType=='0'"></span>
+                <span class="iconfont-large self-zhifubao" style="color:#00a0ea;" v-if="item.payType=='1'"></span>
+                <span class="iconfont-large self-edu" style="color:#f9a340;" v-if="item.payType=='4'"></span>
+                <span class="iconfont-large self-yuanbao danger-color" v-if="item.payType=='6'"></span>
+                <span class="time">{{formatTime(item.addTime, true)}}</span>
+              </p>
+              <span class="status status-0" v-if="item.tradeStatus==0">待支付</span>
+              <span class="status status-1" v-if="item.tradeStatus==1">已支付</span>
+            </div>
+            <div class="item-bottom flex just-between align-center">
+              <span class="money">{{item.realTreadeMoney}}
+                <span class="fs-14">元</span>
+              </span>
+              <p class="fs-14">{{item.memberMobile}}</p>
+            </div>
+          </li>
+            </template>
+            <section class="hv-cen text-center" v-else>
+        <span class="iconfont self-noorder" style="font-size:40px;"></span>
+        <p>没有数据</p>
+      </section>
+          </ul>
+      </div>
+    <!-- <section v-if="info.length">
         <ul>
           <li class="item" v-for="(item,index) in info" :key="index">
             <div class="item-top flex just-between align-center">
@@ -12,7 +73,7 @@
                 <span class="iconfont-large self-edu" style="color:#f9a340;" v-if="item.payType=='4'"></span>
                 <span class="iconfont-large self-yuanbao danger-color" v-if="item.payType=='6'"></span>
                 <span class="time">{{formatTime(item.addTime, true)}}</span>
-                </p>
+              </p>
               <span class="status status-0" v-if="item.tradeStatus==0">待支付</span>
               <span class="status status-1" v-if="item.tradeStatus==1">已支付</span>
             </div>
@@ -28,42 +89,62 @@
       <section class="hv-cen text-center" v-else>
         <span class="iconfont self-noorder" style="font-size:40px;"></span>
         <p>没有数据</p>
-      </section>
+      </section> -->
     </main>
   </div>
 </template>
 <script>
 import { mapState } from "vuex";
-import HeaderTop from 'components/header/index'
+import HeaderTop from "components/header/index";
+import { Tab, TabItem } from "vux";
 import { findMemberVoucherHistory } from "../../api/index";
 import { mixin } from "components/common/mixin";
 export default {
-  name: 'CouponHistory',
+  name: "CouponHistory",
   data() {
     return {
-      info: []
-    }
+      info0: [],
+      info1: [],
+      tabIndex: 0,
+      tradeType: "0",
+      menu: [
+        {
+          key: "0",
+          value: "兑换券"
+        },
+        {
+          key: "1",
+          value: "积分"
+        }
+      ]
+    };
   },
-  components: { HeaderTop },
+  components: { HeaderTop, Tab, TabItem },
   computed: {
     ...mapState(["account"])
   },
   mixins: [mixin],
   created() {
-    this.getInfo();
+    this.toggleItem(this.tabIndex);
+    // this.getInfo();
   },
-  activated() {
-
-  },
+  activated() {},
   methods: {
-getInfo() {
+    toggleItem(index) {
+      this.tabIndex = index;
+      this.tradeType = this.menu[index].key;
+      this.getInfo();
+    },
+    getInfo() {
       let vm = this;
+      this[`info${this.tradeType}`] = [];
       mui.ajax({
         url: findMemberVoucherHistory,
         type: "post",
         headers: { "app-version": "v1.0" },
         data: {
           account: this.account,
+          tradeType: this.tradeType,
           token: md5(`gjfengfindMemberVoucherHistory${this.account}`)
         },
         success(res) {
@@ -73,15 +154,16 @@ getInfo() {
             });
             return;
           }
-          vm.info = res.result;
+          let _list = res.result;
+          vm[`info${vm.tradeType}`] = [...vm[`info${vm.tradeType}`], ..._list];
         }
       });
     }
   }
-}
+};
 </script>
 <style lang='less' scoped>
-@import '../../style/mixin.less';
+@import "../../style/mixin.less";
 
 .item {
   background-color: @white;

@@ -14,7 +14,7 @@
               <span v-if="item.tradeType=='3'" class="status-1">余额转入</span>
               <span v-if="item.tradeType=='4'" class="status-2">提现[{{item.tradeStatus=='0'?'待审核':'审核通过'}}]</span>
               <span v-if="item.tradeType=='5'" class="status-0">订单支付</span>
-              <span v-if="item.tradeType=='6'" class="danger-color">其他[提现退回、代金券付款等]</span>
+              <span v-if="item.tradeType=='6'" class="danger-color">其他[提现退回、兑换券付款等]</span>
               <span v-if="item.tradeType=='8'" class="status-1">充值商家联盟</span>
               <span v-if="item.tradeType=='9'" class="status-0">赠送商家联盟</span>
               <span v-if="item.tradeType=='10'" class="status-0">奖励转入</span>

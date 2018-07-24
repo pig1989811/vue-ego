@@ -8,17 +8,21 @@
        <p>可提现总额（元）</p>
       </section>
       <section class="money-container2 flex align-center text-center">
-        <div class="money-item flex-1" @click="goPage('/merchant/recommendhistory')">
+        <div class="money-item"  @click="navigate('/merchant/recommendhistory')">
           <p class="orange-color">{{member.directMemberMoney}}</p>
           <p>业务奖励</p>
         </div>
-        <div class="money-item flex-1">
+        <div class="money-item">
           <p class="orange-color">{{member.memberVoucherMoney}}</p>
-          <p>代金券</p>
+          <p>兑换券</p>
         </div>
-        <div class="money-item flex-1"  @click="goPage('/trade/interest?type=0')">
+        <div class="money-item">
+          <p class="orange-color">{{member.balanceMoney}}</p>
+          <p>余额</p>
+        </div>
+        <div class="money-item">
           <p class="orange-color">{{member.consumptionMoney}}</p>
-          <p>累计消费额</p>
+          <p>积分</p>
         </div>
       </section>
       <yd-grids-group :rows="3" v-if="member.type=='0'">
@@ -46,7 +50,7 @@
         </yd-grids-item> -->
         <yd-grids-item v-if="+member.merchantType>0" link="/merchant/coupon">
           <span slot="icon" class="iconfont-large self-daijinquan" style="color: #e7d489;"></span>
-          <span slot="text">赠送代金券</span>
+          <span slot="text">赠送</span>
         </yd-grids-item>
         <!-- <yd-grids-item link="/trade/interest?type=0">
           <span slot="icon" class="iconfont-large self-xiaofeijilu" style="color: #663355;"></span>
@@ -70,10 +74,10 @@ export default {
       info: {},
       menu0: [
         {
-          icon: "self-fenhongluji",
+          icon: "self-fenhongjilu",
           text: "天天宝",
           link: "/treasure/index",
-          color: "#e7d489"
+          color: "rgb(223,9,9)"
         },
         {
           icon: "self-lishijilu",
@@ -149,6 +153,8 @@ export default {
   background-color: @white;
   border-bottom: 1px solid #f7f5f5;
   .money-item {
+    width: 50%;
+    margin: .1rem 0;
     p:first-child {
       font-size: 0.28rem;
     }

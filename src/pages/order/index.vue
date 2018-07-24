@@ -260,7 +260,7 @@ export default {
             item.payType == "7" ||
             item.payType == "8"
           ) {
-            //积分||责任金额||代金券
+            //积分||责任金额||兑换券
             vm.checkService(vm.pays["alipay"], function() {
               plus.payment.request(
                 vm.pays["alipay"],

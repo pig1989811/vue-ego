@@ -23,17 +23,21 @@
         <p>可提现总额（元）</p>
       </section>
       <section class="money-container2 flex align-center text-center">
-        <div class="money-item flex-1"  @click="navigate('/merchant/recommendhistory')">
+        <div class="money-item"  @click="navigate('/merchant/recommendhistory')">
           <p class="orange-color">{{member.directMemberMoney}}</p>
           <p>业务奖励</p>
         </div>
-        <div class="money-item flex-1">
+        <div class="money-item">
           <p class="orange-color">{{member.memberVoucherMoney}}</p>
-          <p>代金券</p>
+          <p>兑换券</p>
         </div>
-        <div class="money-item flex-1"  @click="navigate('/trade/interest?type=0')">
+        <div class="money-item">
+          <p class="orange-color">{{member.balanceMoney}}</p>
+          <p>余额</p>
+        </div>
+        <div class="money-item">
           <p class="orange-color">{{member.consumptionMoney}}</p>
-          <p>累计消费额</p>
+          <p>积分</p>
         </div>
       </section>
       <!-- 菜单 -->
@@ -86,22 +90,22 @@
             <span>钱包</span>
           </div>
         </div>
-        <div class="yd-grids-item" @click="navigate('/merchant/upgrade')" v-if="member.type=='1' && +member.merchantType<3">
+        <!-- <div class="yd-grids-item" @click="navigate('/merchant/upgrade')" v-if="member.type=='1' && +member.merchantType<3">
           <div class="yd-grids-icon">
             <span class="iconfont-large self-zengsong" style="color: rgb(206,170,32);"></span>
           </div>
           <div class="yd-grids-txt">
             <span>联盟商家升级</span>
           </div>
-        </div>
-        <div class="yd-grids-item" @click="navigate('/merchant/give2')" v-if="+member.merchantType>=3">
+        </div> -->
+        <!-- <div class="yd-grids-item" @click="navigate('/merchant/give2')" v-if="+member.merchantType>=3">
           <div class="yd-grids-icon">
             <span class="iconfont-large self-zengsong" style="color: rgb(206,170,32);"></span>
           </div>
           <div class="yd-grids-txt">
             <span>商家升级赠送</span>
           </div>
-        </div>
+        </div> -->
         <!-- <div class="yd-grids-item" @click="navigate('/trade/bankcard')">
           <div class="yd-grids-icon">
             <span class="iconfont-large self-yinxingqia" style="color: rgb(30,125,193);"></span>
@@ -141,7 +145,6 @@
       </section>
     </main>
     <footer-bar></footer-bar>
-    <cert-modal @callback="settle"></cert-modal>
     <yd-popup v-model="showDialog" position="center" width="80%">
       <div class="tel-container text-center">
         <a href="tel:4001011553" class="tel-box flex align-center">
@@ -171,8 +174,6 @@ export default {
   created() {},
   computed: {
     ...mapState([
-      "certificateStatus",
-      "showCertificate",
       "account",
       "member",
       "fhbMoney"
@@ -218,11 +219,6 @@ export default {
       this.$router.push({ name: "MyWallet", params: { update: true } });
     },
     goStore() {
-      if (!this.certificateStatus) {
-        this.$store.commit("SHOW_CERTIFICATE", true);
-        return;
-      }
-
       //入驻弹窗
       if (this.member.type == "0") {
         this.settle();
@@ -339,6 +335,8 @@ export default {
   background-color: @white;
   border-bottom: 1px solid #f7f5f5;
   .money-item {
+    width: 50%;
+    margin: .1rem 0;
     p:first-child {
       font-size: 0.28rem;
     }
